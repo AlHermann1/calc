@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 #include <cmath>
+#include
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -37,13 +38,44 @@ std::vector<std::string> split(std::string s, char c){
 
 }
 
-void eval(char op, int num1, int num2){
+double eval(std::vector<char> ops,std::vector<int> n){ // i think should replace this with shunting yard algorithm for eval
+    double ans = n[0]; //init ans to first number
+    for(int i=1;i<ops.size();i++){
+        char c = ops[i-1];
+        char c2 = ops[i];
+        if(c == '*'){
+            ans *= n[1];
+        }
+        else if(c == '/'){
+            ans /= n[1];
+        }
+        else if(c2 == '*' || c2 == '/'){
+            if(c == '+'){
+                std::vector<char> k;
+                for(int o=i;i<ops.size();o++){
+                    k.push_back(ops[o]);
+                }
+                std::vector<int> p;
+                for(int o=i;i<n.size();o++){
+                    p.push_back(n[o]);
+                }
 
+                ans+= eval(k,p);
+            }
+        }
+        else if(c == '+'){
+            ans+=n[i];
+        }
+        else{
+            ans-=n[i];
+        }
+    }
 }
+
 void newnum(){
     int res = 0;
     for(int i=0;i<current_num.size();i++){
-        res+= current_num[i] * pow(10,i);
+        res += current_num[i] * pow(10,i);
     }
     nums.push_back(res);
     current_num = {};
@@ -68,7 +100,7 @@ void MainWindow::keyPressEvent(QKeyEvent* event){
         operations.push_back('/');
         newnum();
     case Qt::Key_Enter:
-        operations.push_back('=');
+        eval(operations,nums);
         newnum();
     }
 
