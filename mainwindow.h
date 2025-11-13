@@ -52,10 +52,17 @@ private slots:
 
     void on_btn9_clicked();
 
+    void on_btnExp_clicked();
+
+    void on_btnAC_clicked();
+
+    void on_btnCE_clicked();
 
 private:
     Ui::MainWindow *ui;
 
     void updateText();
+
+    void displayAnswer(std::string ans);
 };
 #endif // MAINWINDOW_H

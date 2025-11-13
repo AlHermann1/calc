@@ -5,7 +5,6 @@
 #include <cmath>
 #include <deque>
 #include <unordered_map>
-#include <iostream>
 #include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent)
@@ -21,25 +20,16 @@ MainWindow::~MainWindow()
 }
 
 std::string expression = "";
-std::vector<std::string> split(std::string s, char c){
-    std::vector<std::string> vec = {};
-    std::string curr = "";
-    for(const char ch : s){
-        if(ch!=c){
-            curr+=ch;
-        }
-        else{
-            vec.push_back(curr);
-                curr = "";
-        }
+void clear_last(std::string& e){
+    if(!e.empty()){
+        e.pop_back();
     }
-    vec.push_back(curr);
-    return vec;
-
+    return;
 }
 struct sOperator{
     uint8_t precedence;
     uint8_t arguments;
+    bool rightAssociative;
 };
 
 struct sSymbol
@@ -54,90 +44,101 @@ struct sSymbol
         pClosed,
     }
     type = Type::Unknown;
-    sOperator op = {0,2};
+    sOperator op = {0,0,false};
 };
 
 
 std::deque<sSymbol> shunt(std::string expr){ // i think should replace this with shunting yard algorithm for eval
     std::unordered_map<char,sOperator> operations;
-    operations['/'] = {1,2};
-    operations['*'] = {1,2};
-    operations['+'] = {0,2};
-    operations['-'] = {0,2};
-    //operations['^'] = {2,2};  do exponents at some point
+    std::string n = "";
+    operations['/'] = {1,2,false};
+    operations['*'] = {1,2,false};
+    operations['+'] = {0,2,false};
+    operations['-'] = {0,2,false};
+    operations['^'] = {3,2,true};
     qDebug() << expr << '\n';
 
     std::deque<sSymbol> error; //to return for errors
-    error.push_back({"x",sSymbol::Type::Literal_Numeric,{0,0}});
+    error.push_back({"x",sSymbol::Type::Literal_Numeric,{0,0,false}});
 
     std::deque<sSymbol> st;
     std::deque<sSymbol> output;
 
-    sSymbol prev = {"0", sSymbol::Type::Literal_Numeric};
-    for(const char& c: expr){
+    sSymbol prev = {"0", sSymbol::Type::Unknown};
+    for(size_t p=0;p<expr.size();p++){
+        char& c = expr[p];
         qDebug() << c << '\n';
-        //If it is digit, push it to output
+        //If it is digit, add it to num string
         if(std::isdigit(c)){
-            output.push_back({std::string(1,c), sSymbol::Type::Literal_Numeric});
-            prev = output.back();
+            n+=c;
+            if(p >= expr.size()-1){//If the digit is the last character,
+                output.push_back({n, sSymbol::Type::Literal_Numeric});
+            }
         }
-        else if(c == '('){
-            st.push_front({std::string(1,c), sSymbol::Type::pOpen});
-            prev = st.front();
-        }
-        //At closing parenthesis, flush out stack until open parenthesis found
-        else if(c == ')'){
-            while(!st.empty() && st.front().type != sSymbol::Type::pOpen){
-                output.push_back(st.front());
-                st.pop_front();
+        else {
+            if(n!=""){ //if next char isnt digit, push num to stack (if its not empty) and reset it
+                output.push_back({n, sSymbol::Type::Literal_Numeric});
+                n = "";
+                prev = output.back();
             }
-            if(st.empty()){
-                qDebug() <<"!!!ERROR    UNEXPECTED PARENTHESIS\n";
-                return error;
-            }
-            //Remove the open parenthesis from top of stack;
-            if(!st.empty() && st.front().type == sSymbol::Type::pOpen){
-                st.pop_front();
-            }
-            prev = {")", sSymbol::Type::pClosed};
+            if(c == '('){
 
-        }
-        //If it is operator, find the precedence
-        else if(operations.count(c)){
-            sOperator nOp = operations[c];
-            uint8_t nPrec = nOp.precedence;
+                st.push_front({std::string(1,c), sSymbol::Type::pOpen});
+                prev = st.front();
+            }
+            //At closing parenthesis, flush out stack until open parenthesis found
+            else if(c == ')'){
 
-            if(c == '+' || c== '-'){
-                if(prev.type != sSymbol::Type::Literal_Numeric && prev.type != sSymbol::Type::pClosed){
-                    nOp.precedence = 100;
-                    nOp.arguments = 1;
+                while(!st.empty() && st.front().type != sSymbol::Type::pOpen){
+                    output.push_back(st.front());
+                    st.pop_front();
                 }
-            }
+                if(st.empty()){
+                    qDebug() <<"!!!ERROR    UNEXPECTED PARENTHESIS\n";
+                    return error;
+                }
+                //Remove the open parenthesis from top of stack;
+                if(!st.empty() && st.front().type == sSymbol::Type::pOpen){
+                    st.pop_front();
+                }
+                prev = {")", sSymbol::Type::pClosed};
 
-            while(!st.empty() && st.front().type != sSymbol::Type::pOpen){
-                //Iterate over operators in holding stack
-                if(st.front().type == sSymbol::Type::Operator){
-                    const uint8_t hPrec = st.front().op.precedence;
-                    //If its precedence is greater or equal to the new operator's, then push it to output and pop it from holding stack
-                    if(hPrec >= nPrec){
-                        output.push_back(st.front());
-                        st.pop_front();
-                    }
-                    //Otherwise stop iterating (because the first operator has the maximum precedence of the stack)
-                    else{
-                        break;
+            }
+            //If it is operator, find the precedence
+            else if(operations.count(c)){
+                sOperator nOp = operations[c];
+                uint8_t nPrec = nOp.precedence;
+
+                if(c == '+' || c== '-'){
+                    if(prev.type != sSymbol::Type::Literal_Numeric && prev.type != sSymbol::Type::pClosed){
+                        //(c == '+') continue;
+                        nOp.precedence = 2;
+                        nOp.arguments = 1;
+                        nOp.rightAssociative = true;
                     }
                 }
+
+                while(!st.empty() && st.front().type != sSymbol::Type::pOpen){
+                    //Iterate over operators in holding stack
+                    if(st.front().type == sSymbol::Type::Operator){
+                        const uint8_t hPrec = st.front().op.precedence;
+                        //If its precedence is greater or equal to the new operator's, then push it to output and pop it from holding stack
+                        if(hPrec > nPrec || (hPrec == nPrec && !nOp.rightAssociative)){
+                            output.push_back(st.front());
+                            st.pop_front();
+                        }
+                        //Otherwise stop iterating (because the first operator has the maximum precedence of the stack)
+                        else{
+                            break;
+                        }
+                    }
+                }
+                st.push_front({std::string(1,c), sSymbol::Type::Operator, nOp});
+                prev = st.front();
             }
-            st.push_front({std::string(1,c), sSymbol::Type::Operator, nOp});
-            prev = st.front();
-
         }
-        else{
-            qDebug() << "Invalid character" << std::string(1,c) << ", please try again.\n";
-            return error;
 
-        }
+
     } //When all new characters have been added, move operators from holding stack to output
     while(!st.empty()){
         output.push_back(st.front());
@@ -151,7 +152,6 @@ std::deque<sSymbol> shunt(std::string expr){ // i think should replace this with
 
 double rpnSolver(std::deque<sSymbol>rpn){
     std::deque<double> stackSolve;
-
     for (const sSymbol& s : rpn){
         switch(s.type){
         case sSymbol::Type::Literal_Numeric:
@@ -164,10 +164,11 @@ double rpnSolver(std::deque<sSymbol>rpn){
             std::vector<double> mem(s.op.arguments);
             for(uint8_t j=0;j<s.op.arguments;j++){
                 if(stackSolve.empty()){
-                    std::cout << "!!!ERROR!!! Bad Expression\n";
+                    qDebug() << "!!!ERROR!!! Bad Expression\n";
+                    return NAN;
                 }
                 else{
-                    mem[j] = stackSolve[0];
+                    mem[j] = stackSolve.front();
                     stackSolve.pop_front();
                 }
             }
@@ -178,11 +179,16 @@ double rpnSolver(std::deque<sSymbol>rpn){
                 else if(s.symbol[0] == '*') result = mem[1] * mem[0];
                 else if(s.symbol[0] == '+') result = mem[1] + mem[0];
                 else if(s.symbol[0] == '-') result = mem[1] - mem[0];
+                else if(s.symbol[0] == '^')   result = std::pow(mem[1], mem[0]);
+                else{
+                    qDebug() << "ERROR OPERATOR NOT FOUND\n";
+                }
             }
             else if(s.op.arguments==1){
                 if(s.symbol[0] == '+') result = +mem[0];
                 else if(s.symbol[0] == '-') result = -mem[0];
             }
+
             stackSolve.push_front(result);
         }
         break;
@@ -193,6 +199,11 @@ double rpnSolver(std::deque<sSymbol>rpn){
 
 void MainWindow::updateText(){
     ui->resultBox->setText(QString::fromStdString(expression));
+}
+
+void MainWindow::displayAnswer(std::string ans){
+    ui->resultBox->setText(QString::fromStdString(ans));
+
 }
 
 void MainWindow::keyPressEvent(QKeyEvent* event){
@@ -217,6 +228,10 @@ void MainWindow::keyPressEvent(QKeyEvent* event){
         break;
     case Qt::Key_Slash:
         expression += '/';
+        updateText();
+        break;
+    case Qt::Key_AsciiCircum:
+        expression += '^';
         updateText();
         break;
     case Qt::Key_Return:
@@ -259,12 +274,18 @@ void MainWindow::on_btnDivide_clicked()
 }
 
 
+void MainWindow::on_btnExp_clicked()
+{
+    expression += '^';
+    updateText();
+}
+
 
 void MainWindow::on_btnEquals_clicked()
 {
     qDebug() << expression << '\n';
     std::deque<sSymbol> rpn = shunt(expression);
-    if(rpn.front().symbol == "x"){
+    if(rpn.empty() || rpn.front().symbol == "x"){
         qDebug() << "ERROR IN SHUNT\n";
         return;
     }
@@ -323,6 +344,20 @@ void MainWindow::on_btn8_clicked()
 void MainWindow::on_btn9_clicked()
 {
     expression += '9';
+    updateText();
+}
+
+
+void MainWindow::on_btnAC_clicked()
+{
+    expression.clear();
+    updateText();
+}
+
+
+void MainWindow::on_btnCE_clicked()
+{
+    clear_last(expression);
     updateText();
 }
 
