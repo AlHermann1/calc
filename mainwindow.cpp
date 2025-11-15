@@ -212,7 +212,9 @@ void MainWindow::keyPressEvent(QKeyEvent* event){
         qDebug() << num << '\n';
         expression += num;
         updateText();
+        return;
     }
+    qDebug() << event << '\n';
     switch(event->key()){
     case Qt::Key_Plus:
         expression += '+';
@@ -232,6 +234,10 @@ void MainWindow::keyPressEvent(QKeyEvent* event){
         break;
     case Qt::Key_AsciiCircum:
         expression += '^';
+        updateText();
+        break;
+    case Qt::Key_Backspace:
+        expression.pop_back();
         updateText();
         break;
     case Qt::Key_Return:
