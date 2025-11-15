@@ -10,10 +10,15 @@ CONFIG += c++17
 
 SOURCES += \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    shunter.cpp \
+    solver.cpp
 
 HEADERS += \
-    mainwindow.h
+    mainwindow.h \
+    shunter.h \
+    solver.h \
+    symbol.h
 
 FORMS += \
     mainwindow.ui
