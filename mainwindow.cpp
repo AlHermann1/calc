@@ -12,6 +12,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    ui->resultBox->setFocusPolicy(Qt::NoFocus);
 }
 
 MainWindow::~MainWindow()
@@ -214,7 +215,6 @@ void MainWindow::keyPressEvent(QKeyEvent* event){
         updateText();
         return;
     }
-    qDebug() << event << '\n';
     switch(event->key()){
     case Qt::Key_Plus:
         expression += '+';
