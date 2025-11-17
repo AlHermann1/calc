@@ -84,7 +84,8 @@ void MainWindow::keyPressEvent(QKeyEvent* event){
             return;
         }
         double ans = rpnSolver(rpn);
-        ui->resultBox->setText(QString::number(ans));
+        expression = std::to_string(ans);
+        updateText();
         break;
     }
 
@@ -126,7 +127,6 @@ void MainWindow::on_btnExp_clicked()
 
 void MainWindow::on_btnEquals_clicked()
 {
-    qDebug() << expression << '\n';
     std::deque<sSymbol> rpn = shunt(expression);
     if(rpn.empty() || rpn.front().symbol == "x"){
         qDebug() << "ERROR IN SHUNT\n";
@@ -134,6 +134,8 @@ void MainWindow::on_btnEquals_clicked()
     }
     double ans = rpnSolver(rpn);
     expression = std::to_string(ans);
+    qDebug() << "ans: " << ans << '\n';
+    qDebug() << expression << '\n';
     updateText();
 }
 
