@@ -26,7 +26,7 @@ std::deque<sSymbol> shunt(std::string expr){ // i think should replace this with
         char& c = expr[p];
         qDebug() << c << '\n';
         //If it is digit, add it to num string
-        if(std::isdigit(c)){
+        if(std::isdigit(c) || c == '.'){
             n+=c;
             if(p >= expr.size()-1){//If the digit is the last character,
                 output.push_back({n, sSymbol::Type::Literal_Numeric});

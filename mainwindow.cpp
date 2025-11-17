@@ -73,6 +73,10 @@ void MainWindow::keyPressEvent(QKeyEvent* event){
         clear_last(expression);
         updateText();
         break;
+    case Qt::Key_Period:
+        expression += '.';
+        updateText();
+        break;
     case Qt::Key_Return:
         std::deque<sSymbol> rpn = shunt(expression);
         if(rpn.front().symbol == "x"){
@@ -197,6 +201,13 @@ void MainWindow::on_btnAC_clicked()
 void MainWindow::on_btnCE_clicked()
 {
     clear_last(expression);
+    updateText();
+}
+
+
+void MainWindow::on_btnPeriod_clicked()
+{
+    expression += '.';
     updateText();
 }
 

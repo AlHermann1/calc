@@ -58,6 +58,8 @@ private slots:
 
     void on_btnCE_clicked();
 
+    void on_btnPeriod_clicked();
+
 private:
     Ui::MainWindow *ui;
 
