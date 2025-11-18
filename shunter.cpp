@@ -3,7 +3,7 @@
 #include <deque>
 #include <unordered_map>
 #include <QDebug>
-#include <symbol.h>
+#include "symbol.h"
 
 std::deque<sSymbol> shunt(std::string expr){ // i think should replace this with shunting yard algorithm for eval
     std::unordered_map<char,sOperator> operations;

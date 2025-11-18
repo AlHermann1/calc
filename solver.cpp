@@ -1,6 +1,6 @@
 #include <vector>
 #include <deque>
-#include <symbol.h>
+#include "symbol.h"
 #include <cmath>
 #include <QDebug>
 

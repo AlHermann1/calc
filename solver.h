@@ -2,7 +2,7 @@
 #define SOLVER_H
 
 #include <deque>
-#include <symbol.h>
+#include "symbol.h"
 
 double rpnSolver(std::deque<sSymbol>rpn);
 

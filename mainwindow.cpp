@@ -4,9 +4,9 @@
 #include <cmath>
 #include <deque>
 #include <QDebug>
-#include <symbol.h>
-#include <shunter.h>
-#include <solver.h>
+#include "symbol.h"
+#include "shunter.h"
+#include "solver.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -75,6 +75,14 @@ void MainWindow::keyPressEvent(QKeyEvent* event){
         break;
     case Qt::Key_Period:
         expression += '.';
+        updateText();
+        break;
+    case Qt::Key_ParenLeft:
+        expression+='(';
+        updateText();
+        break;
+    case Qt::Key_ParenRight:
+        expression+=')';
         updateText();
         break;
     case Qt::Key_Return:
