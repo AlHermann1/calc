@@ -7,6 +7,35 @@
 #include "symbol.h"
 #include "shunter.h"
 #include "solver.h"
+#include <QFile>
+
+QString dark;
+QString light;
+void MainWindow::loadStyles(){
+    QFile dark_file("dark.qss");
+    QFile light_file("light.qss");
+    bool d = dark_file.open(QFile::ReadOnly);
+    bool l = light_file.open(QFile::ReadOnly);
+    if(!d){
+        qDebug() << "darkfile failed to open\n";
+    }
+    if(!l){
+        qDebug() << "lightfile failed to open\n";
+    }
+
+    light = QLatin1String(light_file.readAll());
+    dark = QLatin1String(dark_file.readAll());
+
+}
+
+void MainWindow::darkMode(bool enabled){
+    if(enabled){
+        qApp->setStyleSheet(dark);
+    }
+    else{
+        qApp->setStyleSheet(light);
+    }
+}
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -14,6 +43,8 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     ui->resultBox->setFocusPolicy(Qt::NoFocus);
+    loadStyles();
+    darkMode(false);
 }
 
 MainWindow::~MainWindow()
@@ -21,12 +52,26 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+
 std::string expression = "";
+bool theme = false; //false=light, true=dark
 void clear_last(std::string& e){
     if(!e.empty()){
         e.pop_back();
     }
     return;
+}
+void remove_zeroes(std::string& s){
+    size_t last_nonzero = s.find_last_not_of('0');
+    if(last_nonzero != std::string::npos) {
+        s.erase(last_nonzero +1);
+    }
+    else{
+        s = "0.0";
+    }
+    if(s.back()=='.'){
+        s += '0';
+    }
 }
 
 
@@ -35,10 +80,6 @@ void MainWindow::updateText(){
     ui->resultBox->setText(QString::fromStdString(expression));
 }
 
-void MainWindow::displayAnswer(std::string ans){
-    ui->resultBox->setText(QString::fromStdString(ans));
-
-}
 
 void MainWindow::keyPressEvent(QKeyEvent* event){
     if(event->key()>=Qt::Key_0 && event->key() <=Qt::Key_9) {
@@ -93,6 +134,7 @@ void MainWindow::keyPressEvent(QKeyEvent* event){
         }
         double ans = rpnSolver(rpn);
         expression = std::to_string(ans);
+        remove_zeroes(expression);
         updateText();
         break;
     }
@@ -142,6 +184,7 @@ void MainWindow::on_btnEquals_clicked()
     }
     double ans = rpnSolver(rpn);
     expression = std::to_string(ans);
+    remove_zeroes(expression);
     qDebug() << "ans: " << ans << '\n';
     qDebug() << expression << '\n';
     updateText();
@@ -219,5 +262,12 @@ void MainWindow::on_btnPeriod_clicked()
 {
     expression += '.';
     updateText();
+}
+
+
+void MainWindow::on_btnTheme_clicked()
+{
+    theme = !theme;
+    darkMode(theme);
 }
 

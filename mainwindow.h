@@ -60,8 +60,14 @@ private slots:
 
     void on_btnPeriod_clicked();
 
+    void on_btnTheme_clicked();
+
 private:
     Ui::MainWindow *ui;
+
+    void loadStyles();
+
+    void darkMode(bool enabled);
 
     void updateText();
 

@@ -274,6 +274,19 @@
      <string>.</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="btnTheme">
+    <property name="geometry">
+     <rect>
+      <x>430</x>
+      <y>10</y>
+      <width>61</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Theme</string>
+    </property>
+   </widget>
   </widget>
  </widget>
  <resources/>

@@ -1,0 +1,173 @@
+/* ---------------------------------------------------------
+   GLOBAL
+--------------------------------------------------------- */
+* {
+    font-family: Segoe UI, Roboto, sans-serif;
+    color: #202020;
+}
+
+QWidget {
+    background-color: #f2f2f2; /* slightly off-white for contrast */
+}
+
+/* ---------------------------------------------------------
+   PUSH BUTTONS
+--------------------------------------------------------- */
+QPushButton {
+    background-color: #ffffff;
+    border: 1px solid #bfbfbf;
+    border-radius: 6px;            /* increased radius for visibility */
+    padding: 6px 10px;
+    color: #202020;
+}
+
+QPushButton:hover {
+    background-color: #f4f4f4;
+}
+
+QPushButton:pressed {
+    background-color: #e8e8e8;
+    border: 1px solid #aaaaaa;
+}
+
+QPushButton:disabled {
+    background-color: #ebebeb;
+    color: #8c8c8c;
+    border: 1px solid #dcdcdc;
+}
+
+/* ---------------------------------------------------------
+   QLINEEDIT
+--------------------------------------------------------- */
+QLineEdit {
+    background-color: #ffffff;
+    border: 1px solid #bfbfbf;
+    border-radius: 6px;
+    padding: 6px;
+    color: #000000;
+    selection-background-color: #3d5afe;
+    selection-color: #ffffff;
+}
+
+/* ---------------------------------------------------------
+   MENUS
+--------------------------------------------------------- */
+QMenu {
+    background-color: #ffffff;
+    border: 1px solid #c5c5c5;
+}
+
+QMenu::item {
+    padding: 6px 20px;
+    background-color: transparent;
+}
+
+QMenu::item:selected {
+    background-color: #e8e8e8;
+}
+
+/* ---------------------------------------------------------
+   SCROLLBARS
+--------------------------------------------------------- */
+QScrollBar:vertical {
+    background: #e6e6e6;
+    width: 12px;
+    margin: 0px;
+}
+
+QScrollBar::handle:vertical {
+    background: #c0c0c0;
+    min-height: 20px;
+    border-radius: 6px;
+}
+
+QScrollBar::handle:vertical:hover {
+    background: #b0b0b0;
+}
+
+QScrollBar::add-line:vertical,
+QScrollBar::sub-line:vertical {
+    height: 0;
+}
+
+QScrollBar:horizontal {
+    background: #e6e6e6;
+    height: 12px;
+    margin: 0px;
+}
+
+QScrollBar::handle:horizontal {
+    background: #c0c0c0;
+    min-width: 20px;
+    border-radius: 6px;
+}
+
+QScrollBar::handle:horizontal:hover {
+    background: #b0b0b0;
+}
+
+QScrollBar::add-line:horizontal,
+QScrollBar::sub-line:horizontal {
+    width: 0;
+}
+
+/* ---------------------------------------------------------
+   COMBOBOX
+--------------------------------------------------------- */
+QComboBox {
+    background-color: #ffffff;
+    border: 1px solid #bfbfbf;
+    border-radius: 12px;
+    padding: 4px;
+    color: #202020;
+}
+
+QComboBox:hover {
+    border: 1px solid #a8a8a8;
+}
+
+QComboBox::drop-down {
+    border: none;
+    width: 25px;
+}
+
+QComboBox QAbstractItemView {
+    background-color: #ffffff;
+    border: 1px solid #bfbfbf;
+    selection-background-color: #e8e8e8;
+    selection-color: #202020;
+}
+
+/* ---------------------------------------------------------
+   CHECKBOX / RADIO BUTTON
+--------------------------------------------------------- */
+QCheckBox, QRadioButton {
+    spacing: 6px;
+}
+
+QCheckBox::indicator, QRadioButton::indicator {
+    width: 16px;
+    height: 16px;
+}
+
+QCheckBox::indicator:unchecked,
+QRadioButton::indicator:unchecked {
+    border: 1px solid #8a8a8a;
+    background: #ffffff;
+}
+
+QCheckBox::indicator:checked,
+QRadioButton::indicator:checked {
+    border: 1px solid #3d5afe;
+    background: #3d5afe;
+}
+
+/* ---------------------------------------------------------
+   TOOLTIP
+--------------------------------------------------------- */
+QToolTip {
+    background-color: #fafafa;
+    color: #000000;
+    border: 1px solid #b4b4b4;
+    padding: 4px;
+}
