@@ -22,6 +22,7 @@ double rpnSolver(std::deque<sSymbol>rpn){
                     return NAN;
                 }
                 else{
+                    qDebug() << mem[j] << '\n';
                     mem[j] = stackSolve.front();
                     stackSolve.pop_front();
                 }

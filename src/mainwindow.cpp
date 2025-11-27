@@ -76,7 +76,13 @@ void remove_zeroes(std::string& s){
 
 
 
-void MainWindow::updateText(){
+void MainWindow::updateText(std::string s){
+    if(expression == "" || expression=="nan"|| expression == "undefined"){
+        expression = s;
+    }
+    else{
+        expression += s;
+    }
     ui->resultBox->setText(QString::fromStdString(expression));
 }
 
@@ -85,46 +91,39 @@ void MainWindow::keyPressEvent(QKeyEvent* event){
     if(event->key()>=Qt::Key_0 && event->key() <=Qt::Key_9) {
         char num = event->key() - Qt::Key_0 + 48;//char(48) = '0';
         qDebug() << num << '\n';
-        expression += num;
-        updateText();
+        std::string s = "";
+        s+=num;
+        updateText(s);
         return;
     }
     switch(event->key()){
     case Qt::Key_Plus:
-        expression += '+';
-        updateText();
+        updateText("+");
         break;
     case Qt::Key_Minus:
-        expression += '-';
-        updateText();
+        updateText("-");
         break;
     case Qt::Key_Asterisk:
-        expression += '*';
-        updateText();
+        updateText("*");
         break;
     case Qt::Key_Slash:
-        expression += '/';
-        updateText();
+        updateText("/");
         break;
     case Qt::Key_AsciiCircum:
-        expression += '^';
-        updateText();
+        updateText("^");
         break;
     case Qt::Key_Backspace:
         clear_last(expression);
-        updateText();
+        updateText("");
         break;
     case Qt::Key_Period:
-        expression += '.';
-        updateText();
+        updateText(".");
         break;
     case Qt::Key_ParenLeft:
-        expression+='(';
-        updateText();
+        updateText("(");
         break;
     case Qt::Key_ParenRight:
-        expression+=')';
-        updateText();
+        updateText(")");
         break;
     case Qt::Key_Return:
         std::deque<sSymbol> rpn = shunt(expression);
@@ -135,7 +134,7 @@ void MainWindow::keyPressEvent(QKeyEvent* event){
         double ans = rpnSolver(rpn);
         expression = std::to_string(ans);
         remove_zeroes(expression);
-        updateText();
+        updateText("");
         break;
     }
 
@@ -143,35 +142,30 @@ void MainWindow::keyPressEvent(QKeyEvent* event){
 
 void MainWindow::on_btnAdd_clicked()
 {
-    expression += '+';
-    updateText();
+    updateText("+");
 }
 
 void MainWindow::on_btnSubtract_clicked()
 {
-    expression += '-';
-    updateText();
+    updateText("-");
 }
 
 
 void MainWindow::on_btnMultiply_clicked()
 {
-    expression += '*';
-    updateText();
+    updateText("*");
 }
 
 
 void MainWindow::on_btnDivide_clicked()
 {
-    expression += '/';
-    updateText();
+    updateText("/");
 }
 
 
 void MainWindow::on_btnExp_clicked()
 {
-    expression += '^';
-    updateText();
+    updateText("^");
 }
 
 
@@ -184,84 +178,74 @@ void MainWindow::on_btnEquals_clicked()
     }
     double ans = rpnSolver(rpn);
     expression = std::to_string(ans);
+    if(expression == "inf"){
+        expression = "undefined";
+    }
     remove_zeroes(expression);
-    qDebug() << "ans: " << ans << '\n';
-    qDebug() << expression << '\n';
-    updateText();
+    updateText("");
 }
 
 
 void MainWindow::on_btn0_clicked()
 {
-    expression += '0';
-    updateText();
+    updateText("0");
 
 }
 void MainWindow::on_btn1_clicked()
 {
-    expression += '1';
-    updateText();
+    updateText("1");
 }
 void MainWindow::on_btn2_clicked()
 {
-    expression += '2';
-    updateText();
+    updateText("2");
 }
 void MainWindow::on_btn3_clicked()
 {
-    expression += '3';
-    updateText();
+    updateText("3");
 }
 void MainWindow::on_btn4_clicked()
 {
-    expression += '4';
-    updateText();
+    updateText("4");
 }
 void MainWindow::on_btn5_clicked()
 {
-    expression += '5';
-    updateText();
+    updateText("5");
 }
 void MainWindow::on_btn6_clicked()
 {
-    expression += '6';
-    updateText();
+    updateText("6");
 }
 void MainWindow::on_btn7_clicked()
 {
-    expression += '7';
-    updateText();
+    updateText("7");
 }
 void MainWindow::on_btn8_clicked()
 {
-    expression += '8';
-    updateText();
+    updateText("8");
 }
 void MainWindow::on_btn9_clicked()
 {
-    expression += '9';
-    updateText();
+    updateText("9");
 }
 
 
 void MainWindow::on_btnAC_clicked()
 {
     expression.clear();
-    updateText();
+    updateText("");
 }
 
 
 void MainWindow::on_btnCE_clicked()
 {
     clear_last(expression);
-    updateText();
+    updateText("");
 }
 
 
 void MainWindow::on_btnPeriod_clicked()
 {
-    expression += '.';
-    updateText();
+    updateText(".");
 }
 
 

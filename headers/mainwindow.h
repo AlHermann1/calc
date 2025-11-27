@@ -69,8 +69,6 @@ private:
 
     void darkMode(bool enabled);
 
-    void updateText();
-
-    void displayAnswer(std::string ans);
+    void updateText(std::string s);
 };
 #endif // MAINWINDOW_H
